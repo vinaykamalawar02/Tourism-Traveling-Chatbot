@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Enhanced Home Button Styles */
+        .home-button {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(76, 175, 80, 0.92);
+            color: white;
+            border-radius: 24px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            transition: all 0.25s ease;
+            transform-origin: left center;
+        }
+
+        .home-button:hover {
+            background: #4CAF50;
+            transform: scale(1.05);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+        }
+
+        .home-button svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.2s ease;
+        }
+
+        .home-button:hover svg {
+            transform: scale(1.1);
+        }
+
+        body {
+            background-image: url("/static/chatbotwallpaper.png");
+            background-size: cover;
+            background-position: center 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            backdrop-filter: brightness(120%);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px; /* Added to prevent content from touching footer */
+        }
+
+        .day-divider {
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
+            padding-top: 15px;
+        }
+
+        .subsection {
+            margin-left: 20px;
+        }
+
+        .subsection-item {
+            margin-left: 40px;
+        }
+
+        .meal-item {
+            margin-left: 40px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .chat-window {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: 450px;
+            margin: 0 auto;
+            padding: 10px;
+            width: 90%;
+            max-width: 600px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* Updated message styles */
+        .user-message {
+            background-color: #4285F4;
+            color: white;
+            border-radius: 18px 18px 0 18px;
+            margin-bottom: 10px;
+            padding: 8px 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-width: 80%;
+            margin-left: auto; /* This pushes it to the right */
+            margin-right: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+            /* Add these two properties */
+            display: table;
+            clear: both;
+        }
+
+        .bot-message {
+            color: #333;
+            margin-bottom: 5px;
+            padding: 5px 5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-width: 90%;
+            /* Add these two properties */
+            display: table;
+            clear: both;
+        }
+
+        .bot-message a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .bot-message a:hover {
+            text-decoration: underline;
+        }
+
+        .tripadvisor-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin: 8px 0;
+        }
+
+        .budget-section {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        
+        .travel-tips {
+            background-color: #e8f4fc;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        
+        .note-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .day-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .section-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #34495e;
+            margin: 2px;
+        }
+
+        .place-header {
+            font-size: 15px;
+            font-weight: bold;
+            color: #16a085;
+            margin: 10px 0 5px 0;
+        }
+
+        .bullet-list {
+            list-style-type: none;
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+        
+        .bullet-list li {
+            position: relative;
+            padding-left: 15px;
+            margin-bottom: 5px;
+        }
+        
+        .bullet-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+        }
+
+        .chat-input {
+            width: 50%;
+            height: 50px;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Updated button styles */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+
+        .chat-submit {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 12px 40px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .chat-submit:hover {
+            transform: scale(1.03);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .chat-submit:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .chat-clear {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 12px 40px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .chat-clear:hover {
+            transform: scale(1.03);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .spinner {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .loading-message {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            color: #666;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 102, 102, 0.3);
+            border-radius: 50%;
+            border-top-color: #666;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer styles - matching interface.html */
+        footer {
+            text-align: center;
+            padding: 25px 20px;
+            background-color: #00334d;
+            color: white;
+            width: 100%;
+            margin-top: auto; /* Pushes footer to bottom */
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Ensure content doesn't shift when scrolling */
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+    </style>
+</head>
+<body onload="displayQuestion()">
+
+    <a href="/" class="home-button" aria-label="Return to homepage">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Home</span>
+    </a>
+
+    <div class="content-wrapper">
+        <div class="chat-window" id="chat-window">
+            <!-- Messages will be inserted here dynamically -->
+        </div>
+        <form onsubmit="return submitForm();">
+            <center>
+                <input type="text" class="chat-input" id="chat-input" placeholder="Type your message here..."><br>
+                <div class="button-container">
+                    <button type="submit" class="chat-submit" id="submit-button">
+                        Send
+                        <span class="spinner" id="spinner" style="display: none;"></span>
+                    </button>
+                    <button type="button" class="chat-clear" onclick="clearChat()">Clear</button>
+                </div>
+            </center>
+        </form>
+    </div>
+
+    <footer>
+        <div class="copyright">
+            &copy; 2025 TripGenius. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        let step = "ask_destination";
+        let destination = "";
+        let days = 0;
+        let isLoading = false;
+
+        function displayQuestion() {
+            var question = document.createElement("div");
+            question.classList.add("bot-message");
+            question.innerText = "Hi! Welcome to the tourism chatbot. Enter which place you want to visit?";
+            document.getElementById("chat-window").appendChild(question);
+        }
+
+        function showLoading() {
+            isLoading = true;
+            document.getElementById("submit-button").disabled = true;
+            
+            var loadingMessage = document.createElement("div");
+            loadingMessage.classList.add("loading-message");
+            loadingMessage.id = "loading-message";
+            
+            var spinner = document.createElement("div");
+            spinner.classList.add("loading-spinner");
+            
+            var text = document.createElement("span");
+            text.textContent = "Preparing your itinerary... Please wait.";
+            
+            loadingMessage.appendChild(spinner);
+            loadingMessage.appendChild(text);
+            
+            document.getElementById("chat-window").appendChild(loadingMessage);
+            document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+        }
+
+        function hideLoading() {
+            isLoading = false;
+            document.getElementById("spinner").style.display = "none";
+            document.getElementById("submit-button").disabled = false;
+            
+            var loadingElement = document.getElementById("loading-message");
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+        }
+
+        function submitForm() {
+            if (isLoading) return false;
+            
+            var user_input = document.getElementById("chat-input").value;
+            if (!user_input.trim()) return false;
+            
+            var message = document.createElement("div");
+            message.classList.add("user-message");
+            message.innerText = user_input;
+            document.getElementById("chat-window").appendChild(message);
+            
+            document.getElementById("chat-input").value = "";
+            
+            showLoading();
+            
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: user_input,
+                    step: step,
+                    destination: destination,
+                    days: days
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                
+                var response = document.createElement("div");
+                response.classList.add("bot-message");
+                
+                let formattedMessage = data.message
+                    .replace(/Day \d+:/g, '<div class="day-divider"></div><div class="day-header">$&</div>')
+                    .replace(/(• Places to Visit:|• Evening Activity:|• Meal Plans:|• Unique Experience:|• Local Festival or Event:|• Hidden Gem:|• Cultural Insight:|• Interactive Element:|Travel Tips:|Additional Recommendations:|Budget Breakdown \(Estimate\):|Accommodation:)/g, 
+                            '<div class="section-header">$1</div>')
+                    .replace(/(\d+\. .*? \(Timings:.*?\))/g, '<div class="place-header">$1</div>')
+                    .replace(/• (Famous for:|Entry Fee:|Food:|Shopping:|Nearby Attractions:|Transportation:|Traffic Tips:)(.*?)(<br>|$)/g, 
+                            '<div class="subsection"><div class="subsection-item"><strong>$1</strong>$2</div></div>')
+                    .replace(/• (Breakfast:|Lunch:|Dinner:)(.*?)(<br>|$)/g, 
+                            '<div class="meal-item"><strong>$1</strong>$2</div>')
+                    .replace(/• (.*?)(<br>|$)/g, '<li>$1</li>')
+                    .replace(/(<li>.*?<\/li>)+/g, '<ul class="bullet-list">$&</ul>')
+                    .replace(/(Budget Breakdown \(Estimate\):.*?)(Day \d+:|Travel Tips:|$)/gs, 
+                            '<div class="budget-section">$1</div>$2')
+                    .replace(/(Travel Tips:.*?)(Day \d+:|Additional Recommendations:|$)/gs, 
+                            '<div class="travel-tips">$1</div>$2')
+                    .replace(/Note:.*?(<br>|$)/g, '<div class="note-box">$&</div>')
+                    .replace(/<br><br>/g, '<div style="height: 8px;"></div>')
+                    .replace(/🔍\s<a href='(.*?)' target='_blank' style='(.*?)'>(.*?)<\/a>/g, 
+                            '<span class="tripadvisor-link">🔍<a href="$1" target="_blank" style="$2">$3</a></span>')
+                    .replace(/\*/g, '');
+
+                response.innerHTML = formattedMessage;
+                document.getElementById("chat-window").appendChild(response);
+                
+                if (data.step) step = data.step;
+                if (data.destination) destination = data.destination;
+                if (data.days) days = data.days;
+                
+                document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+            })
+            .catch(error => {
+                hideLoading();
+                
+                console.error('Error:', error);
+                var errorMessage = document.createElement("div");
+                errorMessage.classList.add("bot-message");
+                errorMessage.innerText = "Sorry, there was an error processing your request. Please try again.";
+                document.getElementById("chat-window").appendChild(errorMessage);
+            });
+            
+            return false;
+        }
+
+        function clearChat() {
+            document.getElementById("chat-window").innerHTML = "";
+            displayQuestion();
+            step = "ask_destination";
+            destination = "";
+            days = 0;
+        }
+    </script>
+</body>
+</html>

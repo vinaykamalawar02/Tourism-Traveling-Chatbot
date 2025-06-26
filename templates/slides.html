@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TripGenius</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
+
+
+        /* Home Button */
+.home-button {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(51, 153, 255, 0.92); /* Blue to match slides theme */
+    color: white;
+    border-radius: 24px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    z-index: 1000; /* Higher z-index for slides */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    transition: all 0.25s ease;
+}
+.home-button:hover {
+    background: #3399ff;
+    transform: scale(1.05);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+}
+.home-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #d4ecf9;
+            flex-direction: column; /* Added to accommodate footer */
+            padding-bottom: 60px; /* Added to prevent footer from covering content */
+        }
+
+        .container.swiper {
+            width: 100%;
+            max-width: 1200px;
+            padding: 50px 0;
+            margin-bottom: 20px; /* Added space before footer */
+        }
+
+        .card-item .placename {
+            text-align: center;
+            margin-top: 10px;
+            color: #00334d; 
+        }
+
+        .card-item {
+            color: #00334d;
+            width: 300px;
+            padding: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #cce6ff;
+            box-shadow: 0 8px 20px rgba(0, 64, 128, 0.3); 
+            border:1px solid #99c2ff;
+            margin: 15px;
+        }
+
+        .img1 {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3399cc;
+            padding: 2px;
+        }
+
+        .card-item .famousfor {
+            font-size: 1.15rem;
+            color: #00334d; 
+            font-weight: 500;
+            margin: 14px 0;
+        }
+
+        .card-item .guide {
+            margin-top: 15px;
+            font-size: 1.25rem;
+            padding: 10px 35px;
+            border-radius: 5px;
+            color: #fff;
+            font-weight: 500;
+            background: #3399ff; /* vivid blue */
+            color: white;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.5s;
+        }
+
+        .card-item .guide:hover {
+            background-color: #3399ff; /* same as default */
+            transform: scale(1.08); /* gentle expansion */
+            box-shadow: 0 6px 16px rgba(0, 64, 128, 0.45); /* darker, smooth shadow */
+            border: 1px solid transparent; /* no visible border */
+        }
+
+        /* Added footer styles */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #00334d;
+            color: white;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .container.swiper {
+                padding: 50px 0 80px; /* Added more bottom padding for mobile */
+            }
+            
+            body {
+                padding-bottom: 80px; /* Increased for mobile footer */
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <a href="/" class="home-button" aria-label="Return to homepage">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+    <span>Home</span>
+</a>
+
+    <div class="container swiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='kerala.jpg') }}" class="img1">
+                <h2 class="placename">Kerala</h2>
+                <p class="famousfor">Backwaters</p>
+                <button class="guide" onclick="window.open('https://www.tripadvisor.in/Tourism-g297631-Kerala-Vacations.html', '_blank')">Guide me</button>
+            </div>
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='chennai.jpg') }}" class="img1">
+                <h2 class="placename">Chennai</h2>
+                <p class="famousfor">Temples</p>
+                <button class="guide" onclick="window.open('https://www.holidify.com/places/chennai/', '_blank')">Guide me</button>
+            </div>
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='maharashtra.jpeg') }}" class="img1">
+                <h2 class="placename">Maharashtra</h2>
+                <p class="famousfor">Monuments</p>
+                <button class="guide" onclick="window.open('https://www.tripadvisor.in/Tourism-g297648-Maharashtra-Vacations.html', '_blank')">Guide me</button>
+            </div>
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='himachal.jpg') }}" class="img1">
+                <h2 class="placename">Himachal</h2>
+                <p class="famousfor">Mountains</p>
+                <button class="guide" onclick="window.open('https://www.tripadvisor.in/Attractions-g297617-Activities-c57-t66-Himachal_Pradesh.html', '_blank')">Guide me</button>
+            </div>
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='hyderabad.jpg') }}" class="img1">
+                <h2 class="placename">Hyderabad</h2>
+                <p class="famousfor">Palaces</p>
+                <button class="guide" onclick="window.open('https://www.tripadvisor.in/Tourism-g297586-Hyderabad_Hyderabad_District_Telangana-Vacations.html', '_blank')">Guide me</button>
+            </div>
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='sikkim.jpg') }}" class="img1">
+                <h2 class="placename">Sikkim</h2>
+                <p class="famousfor">Mountains</p>
+                <button class="guide" onclick="window.open('https://www.tripadvisor.in/Tourism-g297673-Sikkim-Vacations.html', '_blank')">Guide me</button>
+            </div>
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='odisha.jpg') }}" class="img1">
+                <h2 class="placename">Odisha</h2>
+                <p class="famousfor">Ancient Temples</p>
+                <button class="guide" onclick="window.open('https://www.tripadvisor.in/Tourism-g297660-Odisha-Vacations.html', '_blank')">Guide me</button>
+            </div>
+            <div class="swiper-slide card-item">
+                <img src="{{ url_for('static', filename='uttarakhand.webp') }}" class="img1">
+                <h2 class="placename">Uttarakhand</h2>
+                <p class="famousfor">Beautiful Sceneries</p>
+                <button class="guide" onclick="window.open('https://www.tripadvisor.in/Tourism-g580106-Rishikesh_Dehradun_District_Uttarakhand-Vacations.html', '_blank')">Guide me</button>
+            </div>
+        </div>
+
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+
+    <!-- Added footer -->
+    <footer>
+        <p>&copy; 2025 TripGenius. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper('.swiper', {
+            slidesPerView: 3,
+            spaceBetween: 20,
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+    </script>
+</body>
+</html>

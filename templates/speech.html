@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voicebot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Home Button */
+        .home-button {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(76, 175, 80, 0.92);
+            color: white;
+            border-radius: 24px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            transition: all 0.25s ease;
+        }
+        .home-button:hover {
+            background: #4CAF50;
+            transform: scale(1.05);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+        }
+        .home-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        body {
+            background-image: url("/static/chatbotwallpaper.png");
+            background-size: cover;
+            background-position: center 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+    
+            margin: 0;
+            padding: 0;
+            backdrop-filter: brightness(120%);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.1); /* Added background color */
+            padding-bottom: 20px;
+        }
+
+        .day-divider {
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
+            padding-top: 15px;
+            
+        }
+
+        .subsection {
+            margin-left: 20px;
+        }
+
+        .subsection-item {
+            margin-left: 40px;
+        }
+
+        .meal-item {
+            margin-left: 40px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .chat-window {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: 450px;
+            margin: 0 auto;
+            padding: 10px;
+            width: 90%;
+            max-width: 600px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* User message bubble - right aligned */
+        .user-message {
+            background-color: #4285F4;
+            color: white;
+            border-radius: 18px 18px 0 18px;
+            margin-bottom: 10px;
+            padding: 8px 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-width: 80%;
+            margin-left: auto;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+            display: table;
+            clear: both;
+        }
+
+        /* Bot message - left aligned */
+        .bot-message {
+            color: #333;
+            margin-bottom: 10px;
+            padding: 10px 16px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-width: 90%;
+            display: table;
+            clear: both;
+        }
+
+        .bot-message a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .bot-message a:hover {
+            text-decoration: underline;
+        }
+
+        /* Add these styles to your CSS */
+        .welcome-text {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .instruction-text {
+            color: #7f8c8d;
+            font-size: 14px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .tripadvisor-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin: 8px 0;
+        }
+
+        .budget-section {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        
+        .travel-tips {
+            background-color: #e8f4fc;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        
+        .note-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .day-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .section-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #34495e;
+            margin: 12px 0 8px 0;
+        }
+
+        .place-header {
+            font-size: 15px;
+            font-weight: bold;
+            color: #16a085;
+            margin: 10px 0 5px 0;
+        }
+
+        .bullet-list {
+            list-style-type: none;
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+        
+        .bullet-list li {
+            position: relative;
+            padding-left: 15px;
+            margin-bottom: 5px;
+        }
+        
+        .bullet-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+        }
+
+        /* Voice controls */
+        .voice-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .voice-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            min-width: 150px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            transform-origin: center;
+        }
+
+        .voice-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        #stop-btn {
+            background-color: #f44336;
+        }
+
+        #stop-btn:hover {
+            background-color: #e53935;
+        }
+
+        #resume-btn {
+            background-color: #ff9800;
+            display: none;
+        }
+
+        #resume-btn:hover {
+            background-color: #fb8c00;
+        }
+
+        #status {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        /* Loading indicator */
+        .loading-message {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            color: #666;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            max-width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 102, 102, 0.3);
+            border-radius: 50%;
+            border-top-color: #666;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Welcome screen styles */
+        #welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .mic-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            fill: #3498db;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Footer styles - Updated to match interface.html */
+        footer {
+            text-align: center;
+            padding: 25px 20px;
+            background-color: #00334d;
+            color: white;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Ensure content doesn't shift when scrolling */
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        
+    </style>
+</head>
+<body>
+    <a href="/" class="home-button" aria-label="Return to homepage">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Home</span>
+    </a>
+
+    <div class="content-wrapper">
+        <div class="chat-window" id="chat-window">
+            <!-- Welcome Screen -->
+            <!-- Replace the welcome screen div with this -->
+            <div id="welcome-screen">
+                <svg class="mic-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2a1 1 0 0 0-2 0v2a9 9 0 0 0 8 8.94V21H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-2.06A9 9 0 0 0 21 12v-2a1 1 0 0 0-2 0z"></path>
+                </svg>
+                <div class="welcome-text">Welcome to Tourism Voice Assistant</div>
+                <div class="instruction-text">Click "Start Speaking" below to begin planning your trip</div>
+            </div>
+            <!-- Messages will be inserted here dynamically -->
+        </div>
+
+        <div id="status">Ready to start...</div>
+
+        <div class="voice-controls">
+            <button id="start-btn" class="voice-btn">Start Speaking</button>
+            <button id="stop-btn" class="voice-btn" disabled>Stop</button>
+            <button id="resume-btn" class="voice-btn">Resume</button>
+        </div>
+    </div>
+
+    <!-- Updated footer to match interface.html -->
+    <footer>
+        <div class="copyright">
+            &copy; 2025 TripGenius. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Rest of your JavaScript remains the same -->
+    <script>
+        // DOM elements
+        const startBtn = document.getElementById("start-btn");
+        const stopBtn = document.getElementById("stop-btn");
+        const resumeBtn = document.getElementById("resume-btn");
+        const chatWindow = document.getElementById("chat-window");
+        const statusDiv = document.getElementById("status");
+        const welcomeScreen = document.getElementById("welcome-screen");
+
+        // Conversation state
+        let conversationStep = "ask_destination";
+        let destination = "";
+        let days = 0;
+        let budget = 0;
+        let isListening = false;
+        let recognition;
+        let speechSynthesis = window.speechSynthesis;
+        let isProcessing = false;
+        let currentUtterance = null;
+        let isSpeakingItinerary = false;
+        let itineraryText = "";
+        let pausePosition = 0;
+        let isLoadingItinerary = false;
+
+        // Number words mapping for English
+        const numberWords = {
+            'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+            'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+            'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14,
+            'fifteen': 15, 'twenty': 20, 'thirty': 30, 'forty': 40,
+            'fifty': 50, 'hundred': 100, 'thousand': 1000,
+            'lakh': 100000, 'lac': 100000, 'crore': 10000000
+        };
+
+        // Add message to conversation with proper formatting
+        function addToConversation(sender, message) {
+            const messageDiv = document.createElement("div");
+            messageDiv.className = sender === "You" ? "user-message" : "bot-message";
+            
+            // Clean up the message formatting
+            let cleanedMessage = message;
+            
+            // Enhanced formatting with all original content preserved
+            let formattedMessage = cleanedMessage
+                // Add divider before each day
+                .replace(/Day \d+:/g, '<div class="day-divider"></div><div class="day-header">$&</div>')
+                // Section headers
+                .replace(/(• Places to Visit:|• Evening Activity:|• Meal Plans:|• Unique Experience:|• Local Festival or Event:|• Hidden Gem:|• Cultural Insight:|• Interactive Element:|Travel Tips:|Additional Recommendations:|Budget Breakdown \(Estimate\):|Accommodation:)/g, 
+                        '<div class="section-header">$1</div>')
+                // Place headers
+                .replace(/(\d+\. .*? \(Timings:.*?\))/g, '<div class="place-header">$1</div>')
+                // Format bullet points with proper spacing
+                .replace(/• (Famous for:|Entry Fee:|Food:|Shopping:|Nearby Attractions:|Transportation:|Traffic Tips:)(.*?)(<br>|$)/g, 
+                        '<div class="subsection"><div class="subsection-item"><strong>$1</strong>$2</div></div>')
+                // Format meal items with proper spacing
+                .replace(/• (Breakfast:|Lunch:|Dinner:)(.*?)(<br>|$)/g, 
+                        '<div class="meal-item"><strong>$1</strong>$2</div>')
+                // Other bullet points
+                .replace(/• (.*?)(<br>|$)/g, '<li>$1</li>')
+                // Wrap bullet lists
+                .replace(/(<li>.*?<\/li>)+/g, '<ul class="bullet-list">$&</ul>')
+                // Special formatting sections
+                .replace(/(Budget Breakdown \(Estimate\):.*?)(Day \d+:|Travel Tips:|$)/gs, 
+                        '<div class="budget-section">$1</div>$2')
+                .replace(/(Travel Tips:.*?)(Day \d+:|Additional Recommendations:|$)/gs, 
+                        '<div class="travel-tips">$1</div>$2')
+                .replace(/Note:.*?(<br>|$)/g, '<div class="note-box">$&</div>')
+                // Preserve newlines between sections
+                .replace(/<br><br>/g, '<div style="height: 8px;"></div>')
+                // Tripadvisor link
+                .replace(/🔍\s<a href='(.*?)' target='_blank' style='(.*?)'>(.*?)<\/a>/g, 
+                        '<span class="tripadvisor-link">🔍<a href="$1" target="_blank" style="$2">$3</a></span>')
+                // Remove any remaining asterisks
+                .replace(/\*/g, '');
+
+            messageDiv.innerHTML = formattedMessage;
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            
+            // Check if this is the itinerary message
+            if (sender === "Bot" && message.includes("Day 1:")) {
+                isSpeakingItinerary = true;
+                itineraryText = message;
+                resumeBtn.style.display = "inline-block";
+                hideLoading();
+            }
+        }
+
+        // Show loading indicator with message
+        function showLoading() {
+            isLoadingItinerary = true;
+            
+            // Add loading message with inline spinner
+            const loadingMessage = document.createElement("div");
+            loadingMessage.className = "loading-message";
+            loadingMessage.id = "loading-message";
+            
+            const spinner = document.createElement("div");
+            spinner.className = "loading-spinner";
+            
+            const text = document.createElement("span");
+            text.textContent = "Preparing your itinerary... Please wait.";
+            
+            loadingMessage.appendChild(spinner);
+            loadingMessage.appendChild(text);
+            chatWindow.appendChild(loadingMessage);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Hide loading indicator
+        function hideLoading() {
+            isLoadingItinerary = false;
+            
+            // Remove loading message
+            const loadingElement = document.getElementById("loading-message");
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+        }
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    throw new Error("Speech recognition not supported");
+                }
+
+                recognition = new SpeechRecognition();
+                recognition.lang = "en-US";
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = () => {
+                    console.log("Speech recognition started");
+                    isListening = true;
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    statusDiv.textContent = "Listening... Speak now";
+                };
+
+                recognition.onresult = async (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    console.log("User said:", transcript);
+                    addToConversation("You", transcript);
+                    await processUserInput(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error("Recognition error:", event.error);
+                    statusDiv.textContent = `Error: ${event.error}`;
+                    if (event.error === 'not-allowed') {
+                        alert("Microphone access was denied. Please allow microphone access to use voice features.");
+                    }
+                    stopListening();
+                };
+
+                recognition.onend = () => {
+                    console.log("Recognition ended");
+                    if (isListening && !isProcessing) {
+                        recognition.start();
+                    }
+                };
+
+                return true;
+            } catch (error) {
+                console.error("Speech recognition init failed:", error);
+                statusDiv.textContent = "Voice features not available in this browser";
+                startBtn.disabled = true;
+                return false;
+            }
+        }
+
+        // Extract number from text input with better handling for "lakh"
+        function extractNumber(input) {
+            try {
+                // First try to find direct numeric matches
+                const numMatch = input.match(/(\d+[,.]?\d*)/);
+                if (numMatch) {
+                    const num = parseFloat(numMatch[0].replace(',', ''));
+                    if (!isNaN(num)) return num;
+                }
+
+                const lowerInput = input.toLowerCase();
+                
+                // Special handling for "1 lakh" or similar
+                if (lowerInput.includes('lakh') || lowerInput.includes('lac')) {
+                    const numBefore = input.match(/(\d+)\s*lakh|lac/i);
+                    if (numBefore) {
+                        return parseInt(numBefore[1]) * 100000;
+                    }
+                    return 100000; // Default to 1 lakh if just "lakh" is said
+                }
+                
+                if (lowerInput.includes('crore')) {
+                    const numBefore = input.match(/(\d+)\s*crore/i);
+                    if (numBefore) {
+                        return parseInt(numBefore[1]) * 10000000;
+                    }
+                    return 10000000;
+                }
+                
+                if (lowerInput.includes('thousand')) {
+                    const numBefore = input.match(/(\d+)\s*thousand/i);
+                    if (numBefore) {
+                        return parseInt(numBefore[1]) * 1000;
+                    }
+                    return 1000;
+                }
+
+                // Check for word numbers
+                for (const [word, value] of Object.entries(numberWords)) {
+                    if (lowerInput.includes(word.toLowerCase())) {
+                        return value;
+                    }
+                }
+
+                return null;
+            } catch (e) {
+                console.error("Error extracting number:", e);
+                return null;
+            }
+        }
+
+        // Start conversation
+        async function startConversation() {
+            console.log("Starting conversation...");
+            statusDiv.textContent = "Initializing...";
+            
+            // Hide welcome screen
+            welcomeScreen.style.display = 'none';
+            
+            try {
+                // Initialize speech recognition
+                if (!recognition && !initSpeechRecognition()) {
+                    return;
+                }
+
+                // Clear conversation if starting fresh
+                if (conversationStep === "ask_destination") {
+                    chatWindow.innerHTML = "";
+                    destination = "";
+                    days = 0;
+                    budget = 0;
+                    isSpeakingItinerary = false;
+                    itineraryText = "";
+                    pausePosition = 0;
+                    resumeBtn.style.display = "none";
+                }
+
+                // Get initial bot message
+                const response = await fetch("/voice", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        message: "",
+                        is_speech: true,
+                        lang: "en-US",
+                        step: conversationStep,
+                        destination: destination,
+                        days: days,
+                        budget: budget,
+                    }),
+                });
+
+                if (!response.ok) throw new Error("Network response not OK");
+
+                const data = await response.json();
+                addToConversation("Bot", data.message);
+                
+                // Speak the message
+                await speakText(data.message);
+                
+                // Start listening
+                recognition.start();
+            } catch (error) {
+                console.error("Start conversation error:", error);
+                statusDiv.textContent = "Error starting conversation";
+                addToConversation("Bot", "Sorry, I couldn't start the conversation. Please try again.");
+                // Show welcome screen again if error occurs
+                welcomeScreen.style.display = 'flex';
+            }
+        }
+
+        // Speak text
+        function speakText(text) {
+            return new Promise((resolve) => {
+                if (speechSynthesis.speaking) {
+                    speechSynthesis.cancel();
+                }
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = "en-US";
+                utterance.rate = 1.0;
+                
+                utterance.onend = () => {
+                    currentUtterance = null;
+                    resolve();
+                };
+                
+                utterance.onerror = (event) => {
+                    console.error("Speech synthesis error:", event);
+                    currentUtterance = null;
+                    resolve();
+                };
+                
+                utterance.onboundary = (event) => {
+                    if (isSpeakingItinerary && event.name === "word") {
+                        pausePosition = event.charIndex;
+                    }
+                };
+                
+                currentUtterance = utterance;
+                speechSynthesis.speak(utterance);
+            });
+        }
+
+        // Resume speaking itinerary from where it was paused
+        function resumeItinerary() {
+            if (!isSpeakingItinerary || !itineraryText) return;
+            
+            if (speechSynthesis.paused) {
+                // If currently paused, resume
+                speechSynthesis.resume();
+                resumeBtn.textContent = "Pause";
+            } else if (speechSynthesis.speaking) {
+                // If currently speaking, pause
+                speechSynthesis.pause();
+                resumeBtn.textContent = "Resume";
+            } else {
+                // If not speaking, start from pause position
+                const textToSpeak = itineraryText.substring(pausePosition);
+                speakText(textToSpeak);
+                resumeBtn.textContent = "Pause";
+            }
+        }
+
+        // Process user input with improved budget handling
+        async function processUserInput(input) {
+            isProcessing = true;
+            
+            try {
+                // Pre-process input based on conversation step
+                let processedInput = input;
+                
+                if (conversationStep === "ask_destination") {
+                    destination = input;
+                } else if (conversationStep === "ask_days") {
+                    const extractedDays = extractNumber(input);
+                    if (extractedDays !== null) {
+                        processedInput = extractedDays.toString();
+                        days = extractedDays;
+                    } else {
+                        addToConversation("Bot", "Please provide a valid number of days (e.g., '3 days' or 'three days').");
+                        await speakText("Please provide a valid number of days (e.g., '3 days' or 'three days').");
+                        if (isListening) recognition.start();
+                        return;
+                    }
+                } else if (conversationStep === "ask_budget") {
+                    // Handle budget input with units (lakh, thousand, etc.)
+                    let budgetValue = extractNumber(input);
+                    
+                    if (budgetValue !== null) {
+                        processedInput = budgetValue.toString();
+                        budget = budgetValue;
+                        // Show loading only after budget is entered
+                        showLoading();
+                    } else {
+                        addToConversation("Bot", "Please provide a valid budget amount (e.g., '50000 INR', '1 lakh', or 'forty thousand rupees').");
+                        await speakText("Please provide a valid budget amount (e.g., '50000 INR', '1 lakh', or 'forty thousand rupees').");
+                        if (isListening) recognition.start();
+                        return;
+                    }
+                } else if (conversationStep === "ask_another_trip") {
+                    // Handle yes/no response for planning another trip
+                    const lowerInput = input.toLowerCase();
+                    if (lowerInput.includes('no') || lowerInput.includes('nope') || lowerInput.includes('nah') || lowerInput.includes('k')) {
+                        processedInput = "no";
+                        // End conversation properly
+                        addToConversation("Bot", "Thank you for using the voicebot. Have a great day!");
+                        await speakText("Thank you for using the voicebot. Have a great day!");
+                        stopListening();
+                        return;
+                    } else if (lowerInput.includes('yes') || lowerInput.includes('yeah') || lowerInput.includes('yep') || lowerInput.includes('sure')) {
+                        processedInput = "yes";
+                    } else {
+                        addToConversation("Bot", "Please respond with 'Yes' or 'No'.");
+                        await speakText("Please respond with 'Yes' or 'No'.");
+                        if (isListening) recognition.start();
+                        return;
+                    }
+                }
+
+                const response = await fetch("/voice", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        message: processedInput,
+                        is_speech: true,
+                        lang: "en-US",
+                        step: conversationStep,
+                        destination: destination,
+                        days: days,
+                        budget: budget,
+                    }),
+                });
+
+                if (!response.ok) throw new Error("Network response not OK");
+
+                const data = await response.json();
+                
+                // Update state
+                conversationStep = data.step;
+                destination = data.destination || destination;
+                days = data.days || days;
+                budget = data.budget || budget;
+
+                // Add bot response
+                addToConversation("Bot", data.message);
+                
+                // Speak the response
+                await speakText(data.message);
+                
+                // Handle response
+                if (conversationStep === "end_conversation") {
+                    stopListening();
+                    isSpeakingItinerary = false;
+                    resumeBtn.style.display = "none";
+                } else if (isListening) {
+                    recognition.start();
+                }
+            } catch (error) {
+                console.error("Process input error:", error);
+                addToConversation("Bot", "Sorry, I encountered an error. Please try again.");
+                await speakText("Sorry, I encountered an error. Please try again.");
+                stopListening();
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // Stop listening and speaking
+        function stopListening() {
+            if (recognition) {
+                isListening = false;
+                recognition.stop();
+            }
+            
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            statusDiv.textContent = "Ready to continue...";
+            
+            // If conversation is back to initial state, show welcome screen
+            if (conversationStep === "ask_destination") {
+                chatWindow.innerHTML = '';
+                welcomeScreen.style.display = 'flex';
+            }
+        }
+
+        // Event listeners
+        startBtn.addEventListener("click", async () => {
+            // Request microphone permission first
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop());
+                startConversation();
+            } catch (error) {
+                console.error("Microphone access error:", error);
+                statusDiv.textContent = "Microphone access denied";
+                alert("Please enable microphone access to use voice features.");
+            }
+        });
+
+        stopBtn.addEventListener("click", stopListening);
+        
+        resumeBtn.addEventListener("click", resumeItinerary);
+
+        // Initial setup
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            startBtn.disabled = true;
+            statusDiv.textContent = "Voice features not supported in this browser";
+        }
+    </script>
+</body>
+</html>
